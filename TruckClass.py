@@ -8,9 +8,13 @@ class Truck:
         self.current_mileage = current_mileage
         self.location = location
         self.departure_time = departure_time
+        self.time = departure_time
 
     #return our truck information
     def __str__(self):
         return "%s, %s, %s, %s, %s, %s, %s" % (self.max_capacity, self.mph, self.load, 
                                                                                     self.packages, self.current_mileage, 
                                                                                     self.location, self.departure_time)
+    
+    def add_package(self, package):
+        self.packages.append(package)
