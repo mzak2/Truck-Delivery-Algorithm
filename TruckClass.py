@@ -17,4 +17,4 @@ class Truck:
                                                                                     self.location, self.departure_time)
     
     def add_package(self, package):
-        self.packages.append(package)
+        self.packages.append(package.package_id)
