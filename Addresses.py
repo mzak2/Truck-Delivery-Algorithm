@@ -1,5 +1,4 @@
 import csv
-from math import dist
 
 
 class Addresses:

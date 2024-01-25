@@ -4,11 +4,13 @@
 
 import csv
 import datetime
+from multiprocessing import synchronize
 import TruckClass
 
 from InstantiateHashMap import InstantiateHashMap
 from PackageClass import Package
 from Addresses import Addresses
+from builtins import ValueError
 
 
 #create our instance of the hash table
@@ -77,15 +79,17 @@ def begin_route(truck):
 
 
           truck.time += datetime.timedelta(hours= nearest_address / 18)
-          nearest_pkg.arrival_time = truck.time
+          nearest_pkg.delivery_time = truck.time
           nearest_pkg.depart_time = truck.departure_time
           print(f"pkg_ id: {nearest_pkg.package_id} was enroute at {nearest_pkg.depart_time}")
-          print(f"pkg_id: {nearest_pkg.package_id} was delivered at {nearest_pkg.arrival_time}")
+          print(f"pkg_id: {nearest_pkg.package_id} was delivered at {nearest_pkg.delivery_time}")
 
      #calculation for returning from the trucks last location to WGUPS hub
      #must be calculated with the hub address first, or else the x,y column alignment in the distance table will return a "0"
      return_WGUPS = address_csv.total_distance(address_csv.get_address("4001 South 700 East"), address_csv.get_address(truck.location))
-     print(f"----------return to WGUPS hub: {return_WGUPS}")
+     truck.time += datetime.timedelta(hours= return_WGUPS / 18)
+     print(f"----------miles to return to WGUPS hub: {return_WGUPS}")
+     print(f"----------Arrival time at WGUPS hub: {truck.time}")
      truck.current_mileage = truck.current_mileage + return_WGUPS   
 
 
@@ -93,8 +97,11 @@ begin_route(truck_1)
 
 begin_route(truck_2)
 
-#TODO: fix the departure time for truck 3, to not be earlier than 10:20
+#set truck_3 departure time to being the same time as when a truck returns to the hub
+#The driver that returns first will then go to truck_3 and finish the route
 truck_3.departure_time = min(truck_1.time, truck_2.time)
+truck_3.time= min(truck_1.time, truck_2.time)
+
 begin_route(truck_3)
 print(f"-----------------The truck_1 total mileage was: {round(truck_1.current_mileage, 2)}")
 print(f"-----------------The truck_2 total mileage was: {round(truck_2.current_mileage, 2)}")
@@ -104,6 +111,54 @@ print(f"Total Mileage for truck_1 and truck_3 under 140 miles? {(round(truck_1.c
 
 print(f"Total mileage for all trucks was: {round(truck_1.current_mileage, 2) + round(truck_2.current_mileage, 2) + 
                                                        round(truck_3.current_mileage, 2) }")
+
+#UI interface will be text based and will allow the user to input a time to find specific information 
+#information will be package delivery status, time, total mileage
+print("----Welcome to the WGUPS tracking and dispatch services----\n")
+user_input = input("Please enter the word 'continue' to begin.\n")
+
+#make sure all input is lower case for easier verification
+if user_input.lower() == "continue":
+     try:
+          #get user date time group to be in the same format to check the status of our packages
+          #Then ask whether they want a specific package or all packages
+          synchronize_time = input("Please enter you local time for us to synchronize too.\n (Format is HH:MM:SS): ")
+          (h, m, s) = synchronize_time.split(":")
+          time_conversion = datetime.timedelta(hours=int(h), minutes=int(m), seconds=int(s))
+
+          user_specify = input("To get information about a specific please enter 'ID',\n To get all package statuses, enter 'All'\n")
+
+          #if user specifies an ID then go and find it within our hashmap based on the input ID
+          #once found, print the package's information
+          #Otherwise print all the pakcage's information
+          #if there's an error, tell the user and then exit the program
+          if user_specify.lower() == "id":
+               try:
+                    user_pkg_id = input("Please enter the package ID (1-40)\n")
+                    package = packages_hash.get(int(user_pkg_id))
+                    package.check_status(time_conversion)
+                    print(str(package))
+               except ValueError:
+                    print("The value you entered is invalid, please try again")
+                    exit()
+          elif user_specify.lower() == "all":
+               try:
+                    for pkg_id in range(1, 41):
+                         package = packages_hash.get(pkg_id)
+                         package.check_status(time_conversion)
+                         print(str(package))
+                    print(f"As of timestamp: {time_conversion}")
+               except ValueError:
+                    print("The value you entered is invalid, please try again")
+                    exit()
+          else:
+               exit()
+     except ValueError: #catch errors
+          print("The value you entered is invalid, please try again")
+          exit()
+elif user_input.lower() != "continue": #catch errors if not typing continue
+          print("The value you entered is invalid, please try again")
+          exit()
 
 #TODO: all unecessary place holders loops for confirming that function return correct info
 # make sure to delete before turn in

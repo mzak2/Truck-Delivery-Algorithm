@@ -63,11 +63,11 @@ class InstantiateHashMap:
                 pkg_city = package[2]
                 pkg_state = package[3]
                 pkg_zip_code = package[4]
-                pkg_nlt = package[5]
+                pkg_deadline = package[5]
                 pkg_weight = package[6]
-                pkg_delivery_status = "Processing"
+                pkg_delivery_status = "At Hub"
 
                 pkg = Package(pkg_id, pkg_address, pkg_city, pkg_state, pkg_zip_code, 
-                              pkg_nlt, pkg_weight, pkg_delivery_status)
+                              pkg_deadline, pkg_weight, pkg_delivery_status)
                 
                 self.add(pkg_id, pkg)
