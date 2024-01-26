@@ -114,51 +114,53 @@ print(f"Total mileage for all trucks was: {round(truck_1.current_mileage, 2) + r
 
 #UI interface will be text based and will allow the user to input a time to find specific information 
 #information will be package delivery status, time, total mileage
+#use a while loop to continously get input
+#restarts the loop if the user enters something other than id, all, continue, or exit
 print("----Welcome to the WGUPS tracking and dispatch services----\n")
-user_input = input("Please enter the word 'continue' to begin.\n")
 
-#make sure all input is lower case for easier verification
-if user_input.lower() == "continue":
-     try:
-          #get user date time group to be in the same format to check the status of our packages
-          #Then ask whether they want a specific package or all packages
-          synchronize_time = input("Please enter you local time for us to synchronize too.\n (Format is HH:MM:SS): ")
-          (h, m, s) = synchronize_time.split(":")
-          time_conversion = datetime.timedelta(hours=int(h), minutes=int(m), seconds=int(s))
 
-          user_specify = input("To get information about a specific please enter 'ID',\n To get all package statuses, enter 'All'\n")
+while True:
+    user_input = input("Type 'continue' to proceed or 'exit' to stop: \n")
 
-          #if user specifies an ID then go and find it within our hashmap based on the input ID
-          #once found, print the package's information
-          #Otherwise print all the pakcage's information
-          #if there's an error, tell the user and then exit the program
-          if user_specify.lower() == "id":
-               try:
+    if user_input.lower() == "continue":
+        try:
+            synchronize_time = input("Please enter your local time for us to synchronize too.\n (Format is HH:MM:SS): ")
+            (h, m, s) = synchronize_time.split(":")
+            time_conversion = datetime.timedelta(hours=int(h), minutes=int(m), seconds=int(s))
+
+            user_specify = input("To get information about a specific package, please enter 'ID',\n To get all package statuses, enter 'All'\n")
+
+            if user_specify.lower() == "id":
+                try:
                     user_pkg_id = input("Please enter the package ID (1-40)\n")
                     package = packages_hash.get(int(user_pkg_id))
                     package.check_status(time_conversion)
                     print(str(package))
-               except ValueError:
+                except ValueError:
                     print("The value you entered is invalid, please try again")
-                    exit()
-          elif user_specify.lower() == "all":
-               try:
+                    continue
+            elif user_specify.lower() == "all":
+                try:
                     for pkg_id in range(1, 41):
-                         package = packages_hash.get(pkg_id)
-                         package.check_status(time_conversion)
-                         print(str(package))
+                        package = packages_hash.get(pkg_id)
+                        package.check_status(time_conversion)
+                        print(str(package))
                     print(f"As of timestamp: {time_conversion}")
-               except ValueError:
+                except ValueError:
                     print("The value you entered is invalid, please try again")
-                    exit()
-          else:
-               exit()
-     except ValueError: #catch errors
-          print("The value you entered is invalid, please try again")
-          exit()
-elif user_input.lower() != "continue": #catch errors if not typing continue
-          print("The value you entered is invalid, please try again")
-          exit()
+                    continue
+            else:
+                print("Invalid input. Please enter 'ID' or 'All'.")
+                continue  
+        except ValueError:
+            print("The value you entered is invalid, please try again")
+            continue
+    elif user_input.lower() == "exit":
+        break  
+    else:
+        print("The value you entered is invalid, please try again")
+        continue
+
 
 #TODO: all unecessary place holders loops for confirming that function return correct info
 # make sure to delete before turn in
