@@ -63,7 +63,7 @@ def begin_route(truck):
                if address_csv.total_distance(address_csv.get_address(truck.location), address_csv.get_address(package.address)) <= nearest_address:
                     #print(f"Closest address distance is: {address_csv.total_distance(address_csv.get_address(truck.location), (address_csv.get_address(package.address)))}")
                     nearest_address = address_csv.total_distance(address_csv.get_address(truck.location), address_csv.get_address(package.address))
-                    truck.current_mileage =  truck.current_mileage + nearest_address
+                    
                     #print(f"Total mileage for is: {truck.current_mileage}")
                     nearest_pkg = package
           
@@ -71,7 +71,7 @@ def begin_route(truck):
           print(f"Next package ID is:  {nearest_pkg.package_id}")
 
           awaiting_delivery.remove(nearest_pkg)
-
+          truck.current_mileage =  truck.current_mileage + nearest_address
           #truck.current_mileage =  truck.current_mileage + nearest_address
           #print(f"Total mileage for is: {truck.current_mileage}")
 
@@ -86,7 +86,7 @@ def begin_route(truck):
 
      #calculation for returning from the trucks last location to WGUPS hub
      #must be calculated with the hub address first, or else the x,y column alignment in the distance table will return a "0"
-     return_WGUPS = address_csv.total_distance(address_csv.get_address("4001 South 700 East"), address_csv.get_address(truck.location))
+     return_WGUPS = address_csv.total_distance(address_csv.get_address(truck.location), address_csv.get_address("4001 South 700 East"))
      truck.time += datetime.timedelta(hours= return_WGUPS / 18)
      print(f"----------miles to return to WGUPS hub: {return_WGUPS}")
      print(f"----------Arrival time at WGUPS hub: {truck.time}")
@@ -106,7 +106,7 @@ begin_route(truck_3)
 print(f"-----------------The truck_1 total mileage was: {round(truck_1.current_mileage, 2)}")
 print(f"-----------------The truck_2 total mileage was: {round(truck_2.current_mileage, 2)}")
 print(f"-----------------The truck_3 total mileage was: {round(truck_3.current_mileage, 2)}")
-print(f"Total Mileage for truck_1 and truck_3 under 140 miles? {(round(truck_1.current_mileage, 2) + round(truck_3.current_mileage, 2))
+print(f"Total Mileage for all trucks under 140 miles? {(round(truck_1.current_mileage, 2) + round(truck_2.current_mileage, 2) + round(truck_3.current_mileage, 2))
                                                                  < 140}")
 
 print(f"Total mileage for all trucks was: {round(truck_1.current_mileage, 2) + round(truck_2.current_mileage, 2) + 
@@ -128,7 +128,7 @@ while True:
             (h, m, s) = synchronize_time.split(":")
             time_conversion = datetime.timedelta(hours=int(h), minutes=int(m), seconds=int(s))
 
-            user_specify = input("To get information about a specific package, please enter 'ID',\n To get all package statuses, enter 'All'\n")
+            user_specify = input("To get information about a specific package, please enter 'ID',\n To get all package statuses, enter 'All'\n To get truck mileage, enter 'miles'\n" )
 
             if user_specify.lower() == "id":
                 try:
@@ -146,6 +146,16 @@ while True:
                         package.check_status(time_conversion)
                         print(str(package))
                     print(f"As of timestamp: {time_conversion}")
+                except ValueError:
+                    print("The value you entered is invalid, please try again")
+                    continue
+            elif user_specify.lower() == "miles":
+                try:
+                    print(f"Total Mileage for all trucks under 140 miles? {(round(truck_1.current_mileage, 2) + round(truck_2.current_mileage, 2) + round(truck_3.current_mileage, 2))
+                                                                                     < 140}")
+
+                    print(f"Total mileage for all trucks was: {round(truck_1.current_mileage, 2) + round(truck_2.current_mileage, 2) + 
+                                                                           round(truck_3.current_mileage, 2) }")
                 except ValueError:
                     print("The value you entered is invalid, please try again")
                     continue
