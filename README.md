@@ -6,11 +6,11 @@ This algorithm is a greedy algorithm implementing a form of the "Nearest Neighbo
 The following image shows the simple text UI, wherein, a customer enters a time to see the status of packages or trucks.
 In this case a customer may want to view the status of their package with the ID of 15, which will be delivered by 8.13am
 Note text inputs can be in upper or lowercase for usability.
-![](truck_deliv_1.png)
+![](truck_deliv_1.PNG)
 
 This image shows the mileage driven by all trucks to deliver all packages, one task was to deliver all packages within 40 miles.
 This algorithm accomplished it with 20.1 miles to spare.
-![](truck_deliv_2.png)
+![](truck_deliv_2.PNG)
 
 The final image is the 'all' function to view all packages:
 ![](truck_deliv_3.png)
